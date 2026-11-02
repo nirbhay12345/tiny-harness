@@ -38,9 +38,9 @@ TOOLS = [tool("read_file", "Read a text file.", path="file path"),
 
 
 def allowed(name, args):          # permission prompt: anything that changes the machine asks first
-    if AUTO_YES or name in ("read_file", "task"):
-        return True
-    return input(f"\n  allow {name} {json.dumps(args)[:200]}? [y/N] ").strip().lower() == "y"
+    if AUTO_YES or name in ("read_file", "task"): return True
+    what = args.get("command") or args.get("path") or json.dumps(args)[:200]   # the target first, never cut off
+    return input(f"\n  allow {name} {what}? [y/N] ").strip().lower() == "y"
 
 
 def run_tool(name, args):

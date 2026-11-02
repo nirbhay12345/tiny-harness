@@ -5,9 +5,9 @@ A coding agent in 100 lines of Python, with the same parts as Claude Code. It ru
 ```
 $ python agent.py "fix the failing tests"
   → bash {"command": "python -m pytest -q"}
-  allow bash {"command": "python -m pytest -q"}? [y/N] y
+  allow bash python -m pytest -q? [y/N] y
   → edit_file {"path": "login.py", "old": "hashlib.sha256(password).hexdigest()", ...}
-  allow edit_file ...? [y/N] y
+  allow edit_file login.py? [y/N] y
 ```
 Tested 2 Nov 2026 on an Apple Silicon Mac with qwen3:14b. It fixed the demo bug, and all 3 tests pass.
 
