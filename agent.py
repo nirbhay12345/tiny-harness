@@ -1,7 +1,5 @@
-"""tiny-harness: a coding agent in about 100 lines. Same parts as Claude Code, all open source.
-
+"""tiny-harness: a coding agent in 100 lines. Same parts as Claude Code, all open source.
     python agent.py "fix the failing test in login.py"
-
 Model: any OpenAI-compatible endpoint. Default is a local model on Ollama (free, offline).
     HARNESS_BASE_URL=http://localhost:11434/v1  HARNESS_MODEL=qwen3:14b
 """
@@ -86,8 +84,10 @@ def agent(task, depth=0, max_turns=30):
         messages = compact(messages)
         msg = client.chat.completions.create(model=MODEL, messages=messages, tools=tools).choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
-        if not msg.tool_calls:                           # no tool call: the model says it is done
+        if not msg.tool_calls and (msg.content or "").strip():   # no tool call: the model says it is done
             return msg.content
+        if not msg.tool_calls:                           # empty reply (all thinking, no answer): nudge it on
+            messages.append({"role": "user", "content": "Continue: call a tool, or say what you did."}); continue
         for call in msg.tool_calls:                      # finish_reason == "tool_calls": run them
             args = json.loads(call.function.arguments or "{}")
             print(f"{'  ' * (depth + 1)}→ {call.function.name} {json.dumps(args)[:100]}")
